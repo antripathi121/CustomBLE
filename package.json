@@ -1,0 +1,17 @@
+{
+  "name": "customble",
+  "version": "1.0.0",
+  "description": "custom BLE lock plugin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "custom",
+    "seamoon",
+    "lib",
+    "plugin"
+  ],
+  "author": "Anurag Tripathi",
+  "license": "ISC"
+}
