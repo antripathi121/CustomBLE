@@ -12,6 +12,7 @@
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="CustomBLE">
                 <param name="android-package" value="cordova.plugin.custom.ble.CustomBLE" />
+                <param name="onload" value="true" />
             </feature>
         </config-file>
      
@@ -20,6 +21,7 @@
      
         <source-file src="src/android/CustomBLE.java" target-dir="src/cordova/plugin/customBLE/CustomBLE" />
         
+        <framework src="src/android/customble.gradle" custom="true" type="gradleReference"/>
         <lib-file src="src/android/libLockBLE_v2.0.aar"/>
         <lib-file src="src/android/libLockCode_v2.0.aar"/>
     </platform>
