@@ -55,7 +55,8 @@ public class CustomBLE extends CordovaPlugin {
     private static LockerModel lockerModel;
     private static LockManager lockManager;
     private String lockSn;
-    private String snInfo = "6RLxgWwJKJkCKEFa6brXrB9lkaAHvrPJi0vLokBgd2aCu/0RCXaTDkui4ASPJGbc/wVZWV0KUqUdJT1oq9FR//8FWVldClKlHSU9aKvRUf//BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR//Ndazkjr98mbDEwZzQoxrEhzyNislT+jE81eEsD4t2PYqoE3ll1DWmfaJ/gcd98cArwp++6XTAcupECUJbt9NgQ4qZlVxTNm7OgQ8TBSIt71KxQfNH0iMUHJ0KRMwBVXlysgpW7Tzt+sl3GoX3zF6n/BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR//8FWVldClKlHSU9aKvRUf//BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR//8FWVldClKlHSU9aKvRUf//BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR//8FWVldClKlHSU9aKvRUf//BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR//8FWVldClKlHSU9aKvRUf//BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR//8FWVldClKlHSU9aKvRUf//BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR/+i/cVq1OcLiYGSr/pfPSVQ=9f36b80de3a1c8d3472f351c3202d7a6";
+    // private String snInfo = "6RLxgWwJKJkCKEFa6brXrB9lkaAHvrPJi0vLokBgd2aCu/0RCXaTDkui4ASPJGbc/wVZWV0KUqUdJT1oq9FR//8FWVldClKlHSU9aKvRUf//BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR//Ndazkjr98mbDEwZzQoxrEhzyNislT+jE81eEsD4t2PYqoE3ll1DWmfaJ/gcd98cArwp++6XTAcupECUJbt9NgQ4qZlVxTNm7OgQ8TBSIt71KxQfNH0iMUHJ0KRMwBVXlysgpW7Tzt+sl3GoX3zF6n/BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR//8FWVldClKlHSU9aKvRUf//BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR//8FWVldClKlHSU9aKvRUf//BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR//8FWVldClKlHSU9aKvRUf//BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR//8FWVldClKlHSU9aKvRUf//BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR//8FWVldClKlHSU9aKvRUf//BVlZXQpSpR0lPWir0VH//wVZWV0KUqUdJT1oq9FR/+i/cVq1OcLiYGSr/pfPSVQ=9f36b80de3a1c8d3472f351c3202d7a6";
+    private String snInfo;
     private String key;
     private String newKey;
     private final static String TAG = "LockLib";
@@ -90,6 +91,7 @@ public class CustomBLE extends CordovaPlugin {
     
         if (action.equals("search")){
             snInfo = args.getJSONObject(0).getString("snInfo");
+            key = args.getJSONObject(0).getString("key");
             this.search(snInfo, callbackContext);
             return true;
         } else if (action.equals("onClick")){
@@ -153,30 +155,35 @@ public class CustomBLE extends CordovaPlugin {
             }
             cursor.close();
             new Thread(new Runnable() {
+                @Override
                 public void run() {
                     Looper.prepare();
                     mainActivity = cordovaInterface.getActivity();
                     lockManager = new LockManager(mainActivity, 60, true, lockSn,connectCallBack);
-            //         lockManager.setSQLiteDatabase(db);
-            //         lockManager.startScan(new ISearchCallBack() {
-            //             @Override
-            //             public void updateDevicesList(List<LockerModel> lockerModels) {
-            //                 if (lockerModels.size() > 0) {
-            //                     lockerModel = lockerModels.get(0);
-            //                     if (!isFounded) {
-            //                         isFounded = true;
-            //                         lockManager.connectDevice(connectCallBack);
-            //                     }
-            //                 }
-            //             }
-            //             @Override
-            //             public void onSearchStopped() {
-            //                 // Log.i(TAG, "onSearchStopped");
-            //                 if (!isFounded){
+                    lockManager.setSQLiteDatabase(db);
+                    callbackContext.success("loM"+lockManager);
+                    lockManager.startScan(new ISearchCallBack() {
+                        @Override
+                        public void updateDevicesList(List<LockerModel> lockerModels) {
+                            if (lockerModels.size() > 0) {
+                                lockerModel = lockerModels.get(0);
+                                callbackContext.success("loM"+lockerModel);
+                                if (!isFounded) {
+                                    isFounded = true;
+                                    lockManager.connectDevice(connectCallBack);
+                                }
+                            } else{
+                                callbackContext.error("locMs"+lockerModels.toString());
+                            }
+                        }
+                        @Override
+                        public void onSearchStopped() {
+                            // Log.i(TAG, "onSearchStopped");
+                            if (!isFounded){
 
-            //                 }
-            //             }
-            //         });
+                            }
+                        }
+                    });
                 }
             }).start();
         } else {
@@ -187,17 +194,17 @@ public class CustomBLE extends CordovaPlugin {
     private IConnectCallBack connectCallBack = new IConnectCallBack() {
         @Override
         public void onSuccess(int code) {
-            mConnected = true;
+            // mConnected = true;
             // view_Connect.setEnabled(false);
             // view_Disconnect.setEnabled(true);
-            lockManager.stopTimer();
+            // lockManager.stopTimer();
             getAdvertisingInfo();
             // startTimer();
             // callbackContext.success("connected"+code);
         }
         @Override
         public void onFailed(int errorCode) {
-            mConnected = false;
+            // mConnected = false;
             // callbackContext.success("faild" + errorCode);
         }
     };
@@ -211,7 +218,7 @@ public class CustomBLE extends CordovaPlugin {
 
     private  void getAdvertisingInfo() {
         // Log.i(TAG, "Send GetAdvCode ----------------");
-        // lockManager.sendDirective(Methods.GetAdvCode, writeCallBack);
+        lockManager.sendDirective(Methods.GetAdvCode, writeCallBack);
     }
 
 
@@ -223,13 +230,15 @@ public class CustomBLE extends CordovaPlugin {
         //     XToastUtil.showToast(this,"Not connected!");
         //     return;
         // }
-        key = "3800070";
+        // key = "";
         mainActivity = CustomBLE.instance.cordovaInterface.getActivity();
+        // Activity mactivity = cordovaInterface.getActivity();
         switch (clickOn) {
             case "connect" :{
                 // refreshBtnImg(2);
-                search(snInfo, callbackContext);
-                callbackContext.success(snInfo+ "connect called");
+                // search(snInfo, callbackContext);
+                // callbackContext.success(snInfo+ "connect called");
+                callbackContext.success("connect called"+ mainActivity);
                 break;
             }
             case "unlock": {
@@ -336,7 +345,7 @@ public class CustomBLE extends CordovaPlugin {
     private final IWriteCallBack writeCallBack = new IWriteCallBack() {
         @Override
         public void onSuccess(byte[] recvData) {
-            mainActivity = CustomBLE.instance.cordovaInterface.getActivity();
+            // mainActivity = CustomBLE.instance.cordovaInterface.getActivity();
             if (ResultMonitor.isAdvertising(recvData)) {
                 if (lockerModel != null) {
                     adv = ResultMonitor.transferDataToAdv(lockSn, recvData);

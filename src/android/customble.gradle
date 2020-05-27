@@ -8,6 +8,7 @@ repositories{
 dependencies {
     compile(name:'libLockBLE_v2.0', ext:'aar')
     compile(name:'libLockCode_v2.0', ext:'aar')
+    implementation 'com.inuker.bluetooth:library:1.4.0'
 }
 
 android {
